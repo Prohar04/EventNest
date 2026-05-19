@@ -1,185 +1,1123 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load cart_tags %}
 
-{% block title %}Home - EventNest{% endblock %}
+{% block title %}EventNest — Plan, Book & Celebrate Events in Bangladesh{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ══════════════════════════════════════════
+   LANDING PAGE — EventNest Premium Design
+   Dark theme, blue/green branding
+   ══════════════════════════════════════════ */
+
+/* ── Reveal animation base ─────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.reveal-left  { transform: translateX(-32px); }
+.reveal.reveal-right { transform: translateX(32px);  }
+.reveal.revealed {
+  opacity: 1;
+  transform: translate(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .float-card, .hero-blob { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ── HERO ──────────────────────────────────────────────────── */
+.lp-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #0c1a2e 50%, #0f172a 100%);
+  padding: 6rem 0 5rem;
+}
+
+/* animated gradient blobs */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+.hero-blob-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #3B82F6, transparent 70%);
+  top: -120px; left: -100px;
+  animation: blobDrift1 14s ease-in-out infinite alternate;
+}
+.hero-blob-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #10B981, transparent 70%);
+  bottom: -80px; right: -80px;
+  animation: blobDrift2 18s ease-in-out infinite alternate;
+}
+.hero-blob-3 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, #6366f1, transparent 70%);
+  top: 40%; left: 45%;
+  animation: blobDrift1 22s ease-in-out infinite alternate-reverse;
+}
+@keyframes blobDrift1 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 40px) scale(1.15); }
+}
+@keyframes blobDrift2 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-50px, -30px) scale(1.1); }
+}
+
+/* grid dots overlay */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(rgba(99,102,241,0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+.lp-hero .container { position: relative; z-index: 2; }
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hero-layout { grid-template-columns: 1fr; }
+  .hero-visual  { display: none; }
+}
+
+/* hero text */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.85rem;
+  color: #a5b4fc;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(6px);
+}
+
+.hero-heading {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+  color: #f1f5f9;
+}
+.hero-heading .hl-blue  { color: #60a5fa; }
+.hero-heading .hl-green { color: #34d399; }
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  max-width: 540px;
+  margin-bottom: 2.25rem;
+}
+
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-bottom: 2.75rem;
+}
+
+/* stats row */
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.hero-stat-item { text-align: center; }
+.hero-stat-num {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: block;
+}
+.hero-stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Floating visual cards ──────────────────────────────────── */
+.hero-visual {
+  position: relative;
+  height: 480px;
+}
+
+.float-card {
+  position: absolute;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* main glass card */
+.fc-main {
+  width: 280px;
+  background: rgba(30, 41, 59, 0.80);
+  padding: 1.5rem;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+  animation: floatMain 6s ease-in-out infinite;
+}
+.fc-main-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+.fc-main-event {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 1rem;
+}
+.fc-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-bottom: 0.35rem;
+}
+.fc-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.9rem;
+}
+.fc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3B82F6, #10B981);
+  border-radius: 999px;
+  width: 72%;
+}
+.fc-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.fc-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.fc-tag-blue  { background: rgba(59,130,246,0.2); color: #93c5fd; }
+.fc-tag-green { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.fc-tag-purple{ background: rgba(99,102,241,0.2); color: #a5b4fc; }
+
+/* pill badges floating around */
+.fc-pill {
+  padding: 0.5rem 1rem;
+  background: rgba(30,41,59,0.85);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.fc-pill-1 { top: 5%;  left: 0%;  animation: floatPill1 5s ease-in-out infinite; }
+.fc-pill-2 { top: 18%; right: 0%; animation: floatPill2 7s ease-in-out infinite; }
+.fc-pill-3 { bottom: 20%; left: 2%; animation: floatPill3 6s ease-in-out infinite; }
+.fc-pill-4 { bottom: 8%; right: 5%; animation: floatPill4 8s ease-in-out infinite; }
+
+/* small stat card */
+.fc-stat {
+  top: -2%; right: 12%;
+  background: rgba(16,185,129,0.15);
+  border-color: rgba(16,185,129,0.25);
+  padding: 0.75rem 1.1rem;
+  animation: floatStat 9s ease-in-out infinite;
+  text-align: center;
+  min-width: 110px;
+}
+.fc-stat-val { font-size: 1.4rem; font-weight: 800; color: #34d399; }
+.fc-stat-lbl { font-size: 0.7rem; color: #6ee7b7; }
+
+@keyframes floatMain  { 0%,100%{transform:translate(-50%,-50%) translateY(0)} 50%{transform:translate(-50%,-50%) translateY(-12px)} }
+@keyframes floatPill1 { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-8px) rotate(1deg)} }
+@keyframes floatPill2 { 0%,100%{transform:translateY(0) rotate(1deg)}  50%{transform:translateY(-10px) rotate(-2deg)} }
+@keyframes floatPill3 { 0%,100%{transform:translateY(0) rotate(2deg)}  50%{transform:translateY(-6px) rotate(-1deg)} }
+@keyframes floatPill4 { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-9px) rotate(2deg)} }
+@keyframes floatStat  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+/* ── Shared section layout ──────────────────────────────────── */
+.lp-section {
+  padding: 5rem 0;
+}
+.lp-section-alt {
+  background: rgba(30,41,59,0.35);
+}
+.lp-section-title {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+.lp-section-title .eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #34d399;
+  margin-bottom: 0.75rem;
+}
+.lp-section-title h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-bottom: 0.75rem;
+}
+.lp-section-title p {
+  color: #94a3b8;
+  font-size: 1.05rem;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ── Feature cards (What EventNest Does) ────────────────────── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } }
+
+.feature-card {
+  background: rgba(30,41,59,0.6);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.75rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99,102,241,0.35);
+  box-shadow: 0 12px 40px rgba(99,102,241,0.12);
+}
+.feature-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.1rem;
+}
+.fi-blue   { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.fi-green  { background: rgba(16,185,129,0.15); color: #34d399; }
+.fi-purple { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+.fi-teal   { background: rgba(20,184,166,0.15); color: #2dd4bf; }
+.fi-pink   { background: rgba(236,72,153,0.15); color: #f472b6; }
+.fi-amber  { background: rgba(245,158,11,0.15); color: #fbbf24; }
+
+.feature-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.45rem;
+}
+.feature-card p {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Service category cards ──────────────────────────────────── */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 960px)  { .service-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 480px)  { .service-grid { grid-template-columns: 1fr; } }
+
+.svc-card {
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 3/4;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.svc-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+.svc-card-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+.svc-card:hover .svc-card-bg { transform: scale(1.07); }
+.svc-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,15,30,0.92) 0%, rgba(10,15,30,0.3) 60%, transparent 100%);
+}
+.svc-card-body {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 1.5rem;
+  z-index: 2;
+}
+.svc-card-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+.svc-card-body h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.35rem;
+}
+.svc-card-body p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.svc-card-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.82rem; font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ── Product grid ────────────────────────────────────────────── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 1024px) { .products-grid { grid-template-columns: repeat(3,1fr); } }
+@media (max-width: 720px)  { .products-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 400px)  { .products-grid { grid-template-columns: 1fr; } }
+
+.prod-card {
+  background: rgba(30,41,59,0.6);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+.prod-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(59,130,246,0.3);
+  box-shadow: 0 12px 40px rgba(59,130,246,0.1);
+}
+.prod-img-wrap {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #1e293b;
+}
+.prod-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.prod-card:hover .prod-img-wrap img { transform: scale(1.06); }
+.prod-info { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+.prod-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+.prod-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+  flex: 1;
+  line-height: 1.5;
+}
+.prod-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.prod-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #34d399;
+}
+.prod-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59,130,246,0.3);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.prod-btn:hover {
+  background: #3B82F6;
+  color: #fff;
+}
+
+/* placeholder if no image */
+.prod-no-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+  color: #334155;
+}
+
+/* ── How It Works ────────────────────────────────────────────── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  position: relative;
+}
+@media (max-width: 880px) { .steps-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 480px) { .steps-grid { grid-template-columns: 1fr; } }
+
+.step-card {
+  text-align: center;
+  padding: 2rem 1.25rem;
+  border-radius: 16px;
+  background: rgba(30,41,59,0.55);
+  border: 1px solid rgba(255,255,255,0.07);
+  position: relative;
+  transition: transform 0.25s ease;
+}
+.step-card:hover { transform: translateY(-4px); }
+.step-num {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  font-size: 1.1rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.1rem;
+  background: linear-gradient(135deg, #3B82F6, #6366f1);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+}
+.step-card h4 {
+  font-size: 1rem; font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.5rem;
+}
+.step-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.6; margin: 0; }
+
+/* connector line between steps */
+.steps-connector {
+  display: none;
+}
+@media (min-width: 880px) {
+  .steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 52px; left: calc(12.5% + 24px); right: calc(12.5% + 24px);
+    height: 2px;
+    background: linear-gradient(90deg, #3B82F6 0%, #6366f1 50%, #10B981 100%);
+    opacity: 0.35;
+    z-index: 0;
+  }
+  .step-card { z-index: 1; }
+}
+
+/* ── Trust section ───────────────────────────────────────────── */
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 1000px) { .trust-grid { grid-template-columns: repeat(3,1fr); } }
+@media (max-width: 600px)  { .trust-grid { grid-template-columns: repeat(2,1fr); } }
+
+.trust-item {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border-radius: 14px;
+  background: rgba(30,41,59,0.5);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.trust-item:hover {
+  border-color: rgba(16,185,129,0.3);
+  transform: translateY(-3px);
+}
+.trust-icon { font-size: 2rem; margin-bottom: 0.65rem; }
+.trust-item h5 { font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem; }
+.trust-item p  { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin: 0; }
+
+/* ── Final CTA banner ────────────────────────────────────────── */
+.lp-cta-banner {
+  background: linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(16,185,129,0.12) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.lp-cta-banner::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(59,130,246,0.1), transparent 70%);
+  top: -100px; left: -50px;
+  pointer-events: none;
+}
+.lp-cta-banner::after {
+  content: '';
+  position: absolute;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(16,185,129,0.1), transparent 70%);
+  bottom: -80px; right: -40px;
+  pointer-events: none;
+}
+.lp-cta-banner h2 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-bottom: 0.85rem;
+}
+.lp-cta-banner p {
+  color: #94a3b8;
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin: 0 auto 2rem;
+}
+.lp-cta-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Button helpers ──────────────────────────────────────────── */
+.btn-lp-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  border-radius: 12px;
+  font-weight: 600; font-size: 0.95rem;
+  text-decoration: none;
+  border: none; cursor: pointer;
+  background: linear-gradient(135deg, #3B82F6, #6366f1);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-lp-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(59,130,246,0.45);
+  color: #fff;
+}
+
+.btn-lp-green {
+  background: linear-gradient(135deg, #10B981, #059669);
+  box-shadow: 0 6px 20px rgba(16,185,129,0.3);
+}
+.btn-lp-green:hover {
+  box-shadow: 0 10px 28px rgba(16,185,129,0.45);
+}
+
+.btn-lp-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #cbd5e1;
+  box-shadow: none;
+}
+.btn-lp-outline:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.35);
+  color: #f1f5f9;
+  box-shadow: none;
+}
+
+/* ── Divider ──────────────────────────────────────────────────── */
+.lp-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3) 50%, transparent);
+  margin: 0;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <h1>Discover, Create & Manage Events Effortlessly</h1>
-            <p>Your complete platform for event management, professional services, and premium merchandise.</p>
-            <div class="hero-buttons">
-                <a href="{% url 'all_services' %}" class="btn btn-primary">
-                    <i class="bi bi-sparkles"></i> Explore Services
-                </a>
-                <a href="{% url 'all_store_items' %}" class="btn btn-secondary">
-                    <i class="bi bi-shop"></i> Browse Store
-                </a>
-            </div>
+
+<!-- ═══════════════════════════════════════════
+     HERO SECTION
+═══════════════════════════════════════════ -->
+<section class="lp-hero" id="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+  <div class="hero-grid"></div>
+
+  <div class="container">
+    <div class="hero-layout">
+
+      <!-- Text content -->
+      <div class="hero-text">
+        <div class="hero-badge reveal">
+          <i class="bi bi-stars"></i>
+          Bangladesh's Premier Event Platform
         </div>
-    </div>
-</div>
 
-<!-- Featured Services Section -->
-<section class="section">
-    <div class="container">
-        <div class="section-title">
-            <h2>Our Premium Services</h2>
-            <p class="section-subtitle">Professional event services tailored to your needs</p>
-        </div>
-        
-        <div class="grid grid-3">
-            <div class="service-card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=500&h=350&fit=crop" alt="Event Planning">
-                </div>
-                <div class="card-body">
-                    <div class="card-badge">Popular</div>
-                    <h3 class="card-title">Event Planning</h3>
-                    <p class="card-description">Complete event coordination and management from planning to execution.</p>
-                    <a href="{% url 'all_services' %}?category=1" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                        View Services
-                    </a>
-                </div>
-            </div>
+        <h1 class="hero-heading reveal reveal-delay-1">
+          Plan, <span class="hl-blue">Book</span> &amp;<br>
+          <span class="hl-green">Celebrate</span> Events<br>
+          Effortlessly
+        </h1>
 
-            <div class="service-card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=500&h=350&fit=crop" alt="Photography">
-                </div>
-                <div class="card-body">
-                    <div class="card-badge">Professional</div>
-                    <h3 class="card-title">Photography</h3>
-                    <p class="card-description">Professional photographers capturing your special moments.</p>
-                    <a href="{% url 'all_services' %}?category=2" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                        View Services
-                    </a>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1555244162-803834f70033?w=500&h=350&fit=crop" alt="Catering">
-                </div>
-                <div class="card-body">
-                    <div class="card-badge">Delicious</div>
-                    <h3 class="card-title">Catering</h3>
-                    <p class="card-description">Gourmet catering services for events of all sizes.</p>
-                    <a href="{% url 'all_services' %}?category=3" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                        View Services
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Featured Products Section -->
-<section class="section" style="background: rgba(99, 102, 241, 0.05);">
-    <div class="container">
-        <div class="section-title">
-            <h2>Featured Products</h2>
-            <p class="section-subtitle">Curated merchandise and event packages</p>
-        </div>
-        
-        {% if featured_items %}
-        <div class="grid grid-3">
-            {% for item in featured_items %}
-            <div class="product-card">
-                <div class="card-image-container">
-                    <img src="{{ item.image|smart_image_url }}" alt="{{ item.name }}">
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">{{ item.name }}</h3>
-                    <p class="card-description">{{ item.description|truncatewords:15 }}</p>
-                    <div class="card-footer">
-                        <div class="card-price">৳{{ item.price|floatformat:0 }}</div>
-                        <a href="{% url 'store_item_detail' item.id %}" class="btn btn-primary btn-small">
-                            View
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <p>No products available at the moment.</p>
-        </div>
-        {% endif %}
-
-        <div style="text-align: center; margin-top: var(--spacing-3xl);">
-            <a href="{% url 'all_store_items' %}" class="btn btn-primary">
-                <i class="bi bi-arrow-right"></i> Explore Full Store
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Why Choose EventNest Section -->
-<section class="section">
-    <div class="container">
-        <div class="section-title">
-            <h2>Why Choose EventNest?</h2>
-            <p class="section-subtitle">Everything you need for a successful event</p>
-        </div>
-        
-        <div class="grid grid-4">
-            <div class="card">
-                <div style="text-align: center; padding: var(--spacing-xl) 0;">
-                    <div style="font-size: 3rem; color: var(--primary); margin-bottom: var(--spacing-md);">
-                        <i class="bi bi-shield-check"></i>
-                    </div>
-                    <h4 style="margin-bottom: var(--spacing-md);">100% Verified</h4>
-                    <p>All service providers and products are verified for quality.</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: center; padding: var(--spacing-xl) 0;">
-                    <div style="font-size: 3rem; color: var(--accent-blue); margin-bottom: var(--spacing-md);">
-                        <i class="bi bi-lightning-fill"></i>
-                    </div>
-                    <h4 style="margin-bottom: var(--spacing-md);">Fast & Easy</h4>
-                    <p>Quick booking and seamless checkout process.</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: center; padding: var(--spacing-xl) 0;">
-                    <div style="font-size: 3rem; color: var(--accent-teal); margin-bottom: var(--spacing-md);">
-                        <i class="bi bi-headset"></i>
-                    </div>
-                    <h4 style="margin-bottom: var(--spacing-md);">24/7 Support</h4>
-                    <p>Our dedicated support team is always ready to help.</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: center; padding: var(--spacing-xl) 0;">
-                    <div style="font-size: 3rem; color: var(--accent-pink); margin-bottom: var(--spacing-md);">
-                        <i class="bi bi-award"></i>
-                    </div>
-                    <h4 style="margin-bottom: var(--spacing-md);">Best Quality</h4>
-                    <p>Premium services and products for exceptional events.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="section" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
-    <div class="container" style="text-align: center;">
-        <h2 style="color: white; margin-bottom: var(--spacing-xl);">Ready to Create Your Perfect Event?</h2>
-        <p style="color: rgba(255,255,255,0.9); margin-bottom: var(--spacing-2xl); font-size: 1.1rem;">
-            Join thousands of customers who have made their events unforgettable with EventNest.
+        <p class="hero-sub reveal reveal-delay-2">
+          EventNest connects customers across Bangladesh with trusted event planners,
+          photographers, caterers, decorators, printing services, and event products —
+          all in one platform.
         </p>
-        <a href="{% url 'all_services' %}" class="btn btn-secondary">
-            Start Planning Today
-        </a>
-    </div>
+
+        <div class="hero-cta-row reveal reveal-delay-3">
+          <a href="{% url 'all_services' %}" class="btn-lp-primary">
+            <i class="bi bi-sparkles"></i> Explore Services
+          </a>
+          <a href="{% url 'all_store_items' %}" class="btn-lp-primary btn-lp-green">
+            <i class="bi bi-shop"></i> Browse Store
+          </a>
+          {% if not request.user.is_authenticated %}
+          <a href="{% url 'signup' %}" class="btn-lp-primary btn-lp-outline">
+            <i class="bi bi-person-plus"></i> Create Account
+          </a>
+          {% endif %}
+        </div>
+
+        <div class="hero-stats reveal reveal-delay-4">
+          <div class="hero-stat-item">
+            <span class="hero-stat-num stat-number" data-target="500" data-suffix="+">500+</span>
+            <span class="hero-stat-label">Events Managed</span>
+          </div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-num stat-number" data-target="200" data-suffix="+">200+</span>
+            <span class="hero-stat-label">Verified Providers</span>
+          </div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-num stat-number" data-target="64" data-suffix="">64</span>
+            <span class="hero-stat-label">Districts Covered</span>
+          </div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-num stat-number" data-target="98" data-suffix="%">98%</span>
+            <span class="hero-stat-label">Happy Customers</span>
+          </div>
+        </div>
+      </div><!-- /hero-text -->
+
+      <!-- Animated visual -->
+      <div class="hero-visual" aria-hidden="true">
+
+        <!-- floating badge pills -->
+        <div class="float-card fc-pill fc-pill-1">
+          <i class="bi bi-balloon-heart" style="color:#f472b6;"></i> Wedding
+        </div>
+        <div class="float-card fc-pill fc-pill-2">
+          <i class="bi bi-camera" style="color:#60a5fa;"></i> Photography
+        </div>
+        <div class="float-card fc-pill fc-pill-3">
+          <i class="bi bi-egg-fried" style="color:#fbbf24;"></i> Catering
+        </div>
+        <div class="float-card fc-pill fc-pill-4">
+          <i class="bi bi-printer" style="color:#a5b4fc;"></i> Printing
+        </div>
+
+        <!-- stat badge -->
+        <div class="float-card fc-stat">
+          <div class="fc-stat-val">৳BDT</div>
+          <div class="fc-stat-lbl">Local Pricing</div>
+        </div>
+
+        <!-- main glass card -->
+        <div class="float-card fc-main">
+          <div class="fc-main-title">Your Upcoming Event</div>
+          <div class="fc-main-event">🎊 Anniversary Gala — Dhaka</div>
+          <div class="fc-progress-label">
+            <span>Planning progress</span><span>72%</span>
+          </div>
+          <div class="fc-progress-bar"><div class="fc-progress-fill"></div></div>
+          <div class="fc-tags">
+            <span class="fc-tag fc-tag-blue"><i class="bi bi-camera-fill"></i> Photography</span>
+            <span class="fc-tag fc-tag-green"><i class="bi bi-cup-straw"></i> Catering</span>
+            <span class="fc-tag fc-tag-purple"><i class="bi bi-flower1"></i> Decor</span>
+          </div>
+        </div>
+
+      </div><!-- /hero-visual -->
+
+    </div><!-- /hero-layout -->
+  </div>
 </section>
+
+<div class="lp-divider"></div>
+
+<!-- ═══════════════════════════════════════════
+     WHAT EVENTNEST DOES
+═══════════════════════════════════════════ -->
+<section class="lp-section" id="about">
+  <div class="container">
+    <div class="lp-section-title reveal">
+      <span class="eyebrow">Platform Overview</span>
+      <h2>Everything You Need for a Perfect Event</h2>
+      <p>From planning to post-event, EventNest covers every step so you can focus on celebrating.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon fi-blue"><i class="bi bi-calendar-check"></i></div>
+        <h4>Book Services Online</h4>
+        <p>Browse and instantly request quotes for event management, photography, catering, and printing services from verified providers.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon fi-green"><i class="bi bi-cart3"></i></div>
+        <h4>Shop Event Products</h4>
+        <p>Buy decorations, lighting, flowers, invitation cards, packages, and event supplies with BDT pricing and doorstep delivery.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon fi-purple"><i class="bi bi-receipt"></i></div>
+        <h4>Track Orders &amp; Bookings</h4>
+        <p>Monitor booking status, download PDF invoices, and manage all your orders from a single dashboard.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon fi-pink"><i class="bi bi-heart"></i></div>
+        <h4>Wishlist &amp; Reorder</h4>
+        <p>Save favourite services and products for later. Reorder past purchases in a single click when planning the next celebration.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon fi-teal"><i class="bi bi-bell"></i></div>
+        <h4>Smart Notifications</h4>
+        <p>Stay informed with real-time alerts for booking confirmations, order updates, special promotions, and platform news.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon fi-amber"><i class="bi bi-person-circle"></i></div>
+        <h4>Personal Dashboard</h4>
+        <p>Manage your profile, phone number, address, booking history, and order history all from one convenient place.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lp-divider"></div>
+
+<!-- ═══════════════════════════════════════════
+     SERVICE CATEGORIES
+═══════════════════════════════════════════ -->
+<section class="lp-section lp-section-alt" id="services">
+  <div class="container">
+    <div class="lp-section-title reveal">
+      <span class="eyebrow">Our Services</span>
+      <h2>Professional Services for Every Occasion</h2>
+      <p>Trusted event professionals across Bangladesh, ready to make your event extraordinary.</p>
+    </div>
+
+    <div class="service-grid">
+
+      <!-- Event Management -->
+      <div class="svc-card reveal reveal-delay-1">
+        <div class="svc-card-bg" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=800&fit=crop'); background-color:#1e293b;"></div>
+        <div class="svc-card-overlay"></div>
+        <div class="svc-card-body">
+          <div class="svc-card-icon" style="background:rgba(59,130,246,0.25); color:#60a5fa;">
+            <i class="bi bi-calendar-event"></i>
+          </div>
+          <h3>Event Management</h3>
+          <p>Full-service planning for weddings, corporates, birthdays &amp; festivals.</p>
+          <a href="{% url 'all_services' %}?category=1"
+             class="svc-card-link"
+             style="color:#60a5fa; border-color:rgba(59,130,246,0.4);"
+             onmouseover="this.style.background='rgba(59,130,246,0.2)'"
+             onmouseout="this.style.background='transparent'">
+            View Plans <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Photography -->
+      <div class="svc-card reveal reveal-delay-2">
+        <div class="svc-card-bg" style="background-image: url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=600&h=800&fit=crop'); background-color:#1e293b;"></div>
+        <div class="svc-card-overlay"></div>
+        <div class="svc-card-body">
+          <div class="svc-card-icon" style="background:rgba(16,185,129,0.25); color:#34d399;">
+            <i class="bi bi-camera"></i>
+          </div>
+          <h3>Photography</h3>
+          <p>Professional photographers capturing your most precious moments.</p>
+          <a href="{% url 'all_services' %}?category=2"
+             class="svc-card-link"
+             style="color:#34d399; border-color:rgba(16,185,129,0.4);"
+             onmouseover="this.style.background='rgba(16,185,129,0.2)'"
+             onmouseout="this.style.background='transparent'">
+            View Plans <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Catering -->
+      <div class="svc-card reveal reveal-delay-3">
+        <div class="svc-card-bg" style="background-image: url('https://images.unsplash.com/photo-1555244162-803834f70033?w=600&h=800&fit=crop'); background-color:#1e293b;"></div>
+        <div class="svc-card-overlay"></div>
+        <div class="svc-card-body">
+          <div class="svc-card-icon" style="background:rgba(245,158,11,0.25); color:#fbbf24;">
+            <i class="bi bi-egg-fried"></i>
+          </div>
+          <h3>Catering</h3>
+          <p>Gourmet Bangladeshi &amp; international cuisine for events of all sizes.</p>
+          <a href="{% url 'all_services' %}?category=3"
+             class="svc-card-link"
+             style="color:#fbbf24; border-color:rgba(245,158,11,0.4);"
+             onmouseover="this.style.background='rgba(245,158,11,0.2)'"
+             onmouseout="this.style.background='transparent'">
+            View Plans <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Printing Services -->
+      <div class="svc-card reveal reveal-delay-4">
+        <div class="svc-card-bg" style="background-image: url('https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=600&h=800&fit=crop'); background-color:#1e293b;"></div>
+        <div class="svc-card-overlay"></div>
+        <div class="svc-card-body">
+          <div class="svc-card-icon" style="background:rgba(99,102,241,0.25); color:#a5b4fc;">
+            <i class="bi bi-printer"></i>
+          </div>
+          <h3>Printing Services</h3>
+          <p>Invitation cards, banners, flyers &amp; custom marketing materials.</p>
+          <a href="{% url 'all_services' %}?category=4"
+             class="svc-card-link"
+             style="color:#a5b4fc; border-color:rgba(99,102,241,0.4);"
+             onmouseover="this.style.background='rgba(99,102,241,0.2)'"
+             onmouseout="this.style.background='transparent'">
+            View Plans <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+    </div><!-- /service-grid -->
+  </div>
+</section>
+
+<div class="lp-divider"></div>
+
+<!-- ═══════════════════════════════════════════
+     FEATURED STORE PRODUCTS
+═══════════════════════════════════════════ -->
+<section class="lp-section" id="store">
+  <div class="container">
+    <div class="lp-section-title reveal">
+      <span class="eyebrow">Event Store</span>
+      <h2>Shop Event Products &amp; Decorations</h2>
+      <p>Decorations, lighting, flowers, invitation cards, packages, and event supplies — delivered to your door in Bangladesh.</p>
+    </div>
+
+    {% if featured_items %}
+    <div class="products-grid">
+      {% for item in featured_items %}
+      <a href="{% url 'store_item_detail' item.id %}" class="prod-card reveal reveal-delay-{{ forloop.counter|divisibleby:4|yesno:'4,0' }}">
+        <div class="prod-img-wrap">
+          {% if item.image %}
+            <img src="{{ item.image|smart_image_url }}"
+                 alt="{{ item.name }}"
+                 loading="lazy"
+                 onerror="this.parentElement.innerHTML='<div class=\'prod-no-img\'><i class=\'bi bi-image\'></i></div>'">
+          {% else %}
+            <div class="prod-no-img"><i class="bi bi-box-seam"></i></div>
+          {% endif %}
+        </div>
+        <div class="prod-info">
+          <div class="prod-name">{{ item.name }}</div>
+          <div class="prod-desc">{{ item.description|truncatewords:12 }}</div>
+          <div class="prod-footer">
+            <span class="prod-price">৳{{ item.price|floatformat:0 }}</span>
+            <span class="prod-btn">View <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:3rem 0; color:#64748b;">
+      <i class="bi bi-shop" style="font-size:3rem; display:block; margin-bottom:1rem;"></i>
+      <p>Products coming soon. Check back shortly!</p>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:2.5rem;" class="reveal">
+      <a href="{% url 'all_store_items' %}" class="btn-lp-primary btn-lp-green">
+        <i class="bi bi-shop"></i> Browse Full Store
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="lp-divider"></div>
+
+<!-- ═══════════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════════ -->
+<section class="lp-section lp-section-alt" id="how-it-works">
+  <div class="container">
+    <div class="lp-section-title reveal">
+      <span class="eyebrow">Simple Process</span>
+      <h2>How EventNest Works</h2>
+      <p>From discovery to celebration in four simple steps.</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-num">1</div>
+        <h4>Discover</h4>
+        <p>Browse verified services and browse our event product store. Filter by category, price, or location.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num">2</div>
+        <h4>Book or Add to Cart</h4>
+        <p>Request a service quote or add products to your cart. Specify your date, requirements, and preferences.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-num">3</div>
+        <h4>Track Everything</h4>
+        <p>Monitor booking confirmations, order statuses, and delivery updates from your personal dashboard.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-4">
+        <div class="step-num">4</div>
+        <h4>Celebrate</h4>
+        <p>Your event, your way — with verified professionals and quality products making it unforgettable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lp-divider"></div>
+
+<!-- ═══════════════════════════════════════════
+     TRUST / VALUE POINTS
+═══════════════════════════════════════════ -->
+<section class="lp-section" id="trust">
+  <div class="container">
+    <div class="lp-section-title reveal">
+      <span class="eyebrow">Why Trust Us</span>
+      <h2>Built for Bangladesh, Made for You</h2>
+      <p>Every feature is designed around the needs of Bangladeshi customers and local event providers.</p>
+    </div>
+
+    <div class="trust-grid">
+      <div class="trust-item reveal reveal-delay-1">
+        <div class="trust-icon" style="color:#34d399;">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <h5>Verified Providers</h5>
+        <p>All service providers go through a quality verification process.</p>
+      </div>
+      <div class="trust-item reveal reveal-delay-2">
+        <div class="trust-icon" style="color:#60a5fa;">
+          <i class="bi bi-lightning-charge"></i>
+        </div>
+        <h5>Easy Booking</h5>
+        <p>Request a service quote or checkout products in under two minutes.</p>
+      </div>
+      <div class="trust-item reveal reveal-delay-3">
+        <div class="trust-icon" style="color:#fbbf24;">
+          <i class="bi bi-geo-alt"></i>
+        </div>
+        <h5>Bangladesh-Focused</h5>
+        <p>Covering all 64 districts with local providers who understand your needs.</p>
+      </div>
+      <div class="trust-item reveal reveal-delay-1">
+        <div class="trust-icon" style="color:#a5b4fc;">
+          <i class="bi bi-currency-exchange"></i>
+        </div>
+        <h5>BDT Pricing</h5>
+        <p>All services and products priced in Bangladeshi Taka — no hidden fees.</p>
+      </div>
+      <div class="trust-item reveal reveal-delay-2">
+        <div class="trust-icon" style="color:#f472b6;">
+          <i class="bi bi-headset"></i>
+        </div>
+        <h5>Fast Support</h5>
+        <p>Dedicated customer support team ready to assist with any query.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lp-divider"></div>
+
+<!-- ═══════════════════════════════════════════
+     FINAL CTA BANNER
+═══════════════════════════════════════════ -->
+<section class="lp-section">
+  <div class="container">
+    <div class="lp-cta-banner reveal">
+      <h2>Ready to Create Your Perfect Event?</h2>
+      <p>
+        Join thousands of customers across Bangladesh who have made their events
+        unforgettable with EventNest.
+      </p>
+      <div class="lp-cta-row">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'all_services' %}" class="btn-lp-primary">
+            <i class="bi bi-sparkles"></i> Explore Services
+          </a>
+          <a href="{% url 'all_store_items' %}" class="btn-lp-primary btn-lp-green">
+            <i class="bi bi-shop"></i> Browse Store
+          </a>
+          <a href="{% url 'profile' %}" class="btn-lp-primary btn-lp-outline">
+            <i class="bi bi-person-circle"></i> My Dashboard
+          </a>
+        {% else %}
+          <a href="{% url 'signup' %}" class="btn-lp-primary">
+            <i class="bi bi-person-plus"></i> Create Free Account
+          </a>
+          <a href="{% url 'all_services' %}" class="btn-lp-primary btn-lp-green">
+            <i class="bi bi-sparkles"></i> Explore Services
+          </a>
+          <a href="{% url 'login' %}" class="btn-lp-primary btn-lp-outline">
+            <i class="bi bi-box-arrow-in-right"></i> Sign In
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/landing.js' %}"></script>
 {% endblock %}
