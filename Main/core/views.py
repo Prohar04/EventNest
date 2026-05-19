@@ -6,21 +6,17 @@ Production-ready views for all core functionality
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.http import Http404, JsonResponse
 from django.contrib import messages
-from django.db.models import Q, Prefetch, Sum
+from django.db.models import Q, Sum
 from django.views.decorators.http import require_POST
-from django.views.decorators.cache import cache_page
-from django.db import transaction
 from functools import wraps
-from .forms import SignUpForm, BookingForm
+from .forms import SignUpForm
 from .models import (
-    ServiceCategory, Service, StoreCategory, StoreItem, 
+    ServiceCategory, Service, StoreCategory, StoreItem,
     Cart, CartItem, Order, OrderItem, Wishlist,
-    UserProfile, Booking, Contact, Notification
+    UserProfile, Booking, Contact, Notification,
 )
-from django.utils import timezone
 import logging
 
 logger = logging.getLogger(__name__)
@@ -259,7 +255,7 @@ def request_service_quote(request, service_id):
             booking_time = datetime.strptime(time_str, '%H:%M').time()
             
             # Create booking
-            booking = Booking.objects.create(
+            new_booking = Booking.objects.create(
                 user=request.user,
                 service_type='service',
                 service_id=service.id,
@@ -269,24 +265,31 @@ def request_service_quote(request, service_id):
                 total_amount=service.price,
                 status='pending'
             )
-            
+
             # Create notification
             Notification.objects.create(
                 user=request.user,
                 notification_type='booking',
                 title='Booking Confirmed',
-                message=f'Your booking for {service.title} on {booking_date.strftime("%B %d, %Y")} at {booking_time.strftime("%I:%M %p")} has been created.',
-                link=f'/my-bookings/'
+                message=(
+                    f'Your booking #{new_booking.id} for {service.title} on '
+                    f'{booking_date.strftime("%B %d, %Y")} at '
+                    f'{booking_time.strftime("%I:%M %p")} has been created.'
+                ),
+                link='/my-bookings/'
             )
-            
-            messages.success(request, f'Booking confirmed! Check your bookings page for details.')
+
+            messages.success(
+                request,
+                f'Booking #{new_booking.id} confirmed! '
+                'Check your bookings page for details.'
+            )
             return redirect('my_bookings')
         except Exception as e:
             messages.error(request, f'Error creating booking: {str(e)}')
             return redirect('service_detail', service_id=service_id)
-    
-    return render(request, 'services/service_detail.html', {'service': service})
 
+    return render(request, 'services/service_detail.html', {'service': service})
 
 
 @login_required(login_url='login')
@@ -598,7 +601,7 @@ def remove_from_wishlist(request, wishlist_item_id):
 def contact(request):
     """Contact form"""
     if request.method == 'POST':
-        contact = Contact.objects.create(
+        Contact.objects.create(
             full_name=request.POST.get('full_name', ''),
             email=request.POST.get('email', ''),
             subject=request.POST.get('subject', ''),
@@ -762,7 +765,6 @@ def download_invoice(request, order_id):
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
         from reportlab.lib import colors
         from reportlab.lib.units import inch
-        from datetime import datetime
         from django.http import FileResponse
         
         # Create PDF in memory
