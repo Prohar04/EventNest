@@ -39,16 +39,13 @@ def login_required_view(view_func):
 # ============== HOME & LANDING ==============
 
 def home(request):
-    """Home/Landing page"""
-    if not request.user.is_authenticated:
-        return redirect('login')
-    
-    # Get featured items (latest 8)
-    featured_items = StoreItem.objects.all()[:8]
-    
+    """Public landing page — visible to all visitors"""
+    featured_items = StoreItem.objects.filter(stock__gt=0).order_by('-id')[:8]
+    featured_services = Service.objects.select_related('category').order_by('-id')[:4]
+
     context = {
         'featured_items': featured_items,
-        'services': Service.objects.all()[:3],
+        'featured_services': featured_services,
     }
     return render(request, 'home.html', context)
 
@@ -91,19 +88,24 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = form.cleaned_data['username']
-            user.email = form.cleaned_data['email']
-            user.first_name = form.cleaned_data['full_name'].split()[0]
+            full_name = form.cleaned_data['full_name']
+            name_parts = full_name.split(' ', 1)
+            user.first_name = name_parts[0]
+            user.last_name = name_parts[1] if len(name_parts) > 1 else ''
             user.save()
-            
-            # Create user profile
-            UserProfile.objects.create(
+
+            # Save full profile including phone and address
+            UserProfile.objects.update_or_create(
                 user=user,
-                full_name=form.cleaned_data['full_name']
+                defaults={
+                    'full_name': full_name,
+                    'phone': form.cleaned_data['phone'],
+                    'address': form.cleaned_data['address'],
+                }
             )
-            
+
             # Create cart
-            Cart.objects.create(user=user)
+            Cart.objects.get_or_create(user=user)
             
             # Create welcome notification
             Notification.objects.create(
@@ -200,7 +202,6 @@ def profile(request):
 
 # ============== SERVICES ==============
 
-@login_required(login_url='login')
 def all_services(request):
     """Browse all services"""
     query = request.GET.get('q', '')
@@ -227,7 +228,6 @@ def all_services(request):
     return render(request, 'services/all_services.html', context)
 
 
-@login_required(login_url='login')
 def service_detail(request, service_id):
     """Service detail page"""
     service = get_object_or_404(Service, id=service_id)
@@ -348,7 +348,6 @@ def modify_booking(request, booking_id):
 
 # ============== STORE ==============
 
-@login_required(login_url='login')
 def all_store_items(request):
     """Browse all store items"""
     query = request.GET.get('q', '')
@@ -385,7 +384,6 @@ def all_store_items(request):
     return render(request, 'store/all_items.html', context)
 
 
-@login_required(login_url='login')
 def store_item_detail(request, item_id):
     """Store item detail page"""
     item = get_object_or_404(StoreItem, id=item_id)
