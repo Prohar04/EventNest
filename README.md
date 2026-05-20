@@ -12,6 +12,7 @@ A comprehensive event management platform built with Django, designed for the Ba
 ## 🌟 Features
 
 ### 🎯 Core Features
+
 - **Service Booking System** - Book professional event services with date/time selection
 - **E-commerce Store** - Purchase event-related products with cart & checkout
 - **Wishlist** - Save favorite products for later
@@ -20,12 +21,14 @@ A comprehensive event management platform built with Django, designed for the Ba
 - **Search** - Find services and products quickly
 
 ### 📋 Service Categories
+
 - 📸 **Photography** - Wedding, corporate, portrait photography
 - 🍽️ **Catering** - Full-service catering for all events
 - 🎉 **Event Management** - Complete event planning & coordination
 - 🖨️ **Printing Services** - Invitations, banners, promotional materials
 
 ### 🛒 Store Features
+
 - Product catalog with categories
 - Shopping cart with quantity management
 - Wishlist functionality
@@ -33,6 +36,7 @@ A comprehensive event management platform built with Django, designed for the Ba
 - Secure checkout process
 
 ### 👤 User Features
+
 - User registration with phone validation (+880 format)
 - Profile management
 - Booking management (view, modify, cancel)
@@ -42,7 +46,7 @@ A comprehensive event management platform built with Django, designed for the Ba
 ## 🛠️ Tech Stack
 
 | Technology | Version | Purpose |
-|------------|---------|---------|
+| ------------ | --------- | --------- |
 | Python | 3.13 | Backend language |
 | Django | 5.2rc1 | Web framework |
 | SQLite | 3 | Database |
@@ -52,7 +56,7 @@ A comprehensive event management platform built with Django, designed for the Ba
 
 ## 📁 Project Structure
 
-```
+```text
 EventNest/
 ├── Main/
 │   ├── core/                    # Main application
@@ -84,6 +88,7 @@ EventNest/
 ## 🚀 Installation
 
 ### Prerequisites
+
 - Python 3.10 or 3.11 (recommended). Newer Python versions (3.13/3.14) may require building some binary wheels from source.
 - pip (Python package manager)
 - Git
@@ -99,12 +104,14 @@ brew install libjpeg libtiff webp zlib
 ### Setup Instructions (recommended)
 
 1. Clone the repository and change into it:
+
 ```bash
 git clone https://github.com/Prohar04/EventNest.git
 cd EventNest
 ```
 
-2. Work from the `Main/` folder where `manage.py` lives. Create a virtual environment and activate it:
+1. Work from the `Main/` folder where `manage.py` lives. Create a virtual environment and activate it:
+
 ```bash
 cd Main
 python3 -m venv .venv
@@ -114,7 +121,8 @@ source .venv/bin/activate
 .\.venv\Scripts\Activate.ps1
 ```
 
-3. (If you get an error like `Invalid requirement: 'D\x00j\x00a...')` the `requirements.txt` file is UTF-16 encoded. Convert it (one-time):
+1. (If you get an error like `Invalid requirement: 'D\x00j\x00a...')` the `requirements.txt` file is UTF-16 encoded. Convert it (one-time):
+
 ```bash
 # from the repository root
 python - <<'PY'
@@ -134,7 +142,8 @@ else:
 PY
 ```
 
-4. Upgrade packaging tools and install Python dependencies:
+1. Upgrade packaging tools and install Python dependencies:
+
 ```bash
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install -r requirements.txt
@@ -143,39 +152,41 @@ python -m pip install -r requirements.txt
 Notes:
 - If `pip install` fails while building `Pillow`, install the macOS system libs (see above) or use Python 3.10/3.11 where prebuilt wheels are available.
 
-5. Apply migrations:
+1. Apply migrations:
 ```bash
 python manage.py migrate
 ```
 
-6. Create an admin user:
+1. Create an admin user:
 ```bash
 python manage.py createsuperuser
 ```
 
-7. (Optional) Populate sample data:
+1. (Optional) Populate sample data:
 ```bash
 python populate_data.py
 ```
 
-8. Run the development server:
+1. Run the development server:
 ```bash
 python manage.py runserver
 ```
 
-9. Open the site in your browser:
-- Website: http://127.0.0.1:8000/
-- Admin: http://127.0.0.1:8000/admin/
+1. Open the site in your browser:
+- Website: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 Troubleshooting tips
+
 - If you see errors building wheels for packages like `Pillow`, prefer installing the OS image libraries via Homebrew (macOS) or the equivalent package manager on Linux, or use Python 3.10/3.11.
 - If you prefer to run with a production DB or cloud host, set `DATABASE_URL` and other environment variables; see `Main/myproject/settings.py` for supported env vars.
 
 ## 📊 Database Models
 
 ### Core Models
+
 | Model | Description |
-|-------|-------------|
+| ------- | ------------- |
 | `User` | Django built-in user model |
 | `UserProfile` | Extended user information (phone, address) |
 | `Service` | Base service model |
@@ -186,8 +197,9 @@ Troubleshooting tips
 | `PrintingService` | Printing service details |
 
 ### E-commerce Models
+
 | Model | Description |
-|-------|-------------|
+| ------- | ------------- |
 | `StoreItem` | Products in the store |
 | `StoreCategory` | Product categories |
 | `Cart` | User shopping cart |
@@ -197,8 +209,9 @@ Troubleshooting tips
 | `Wishlist` | User wishlist |
 
 ### Booking & Notifications
+
 | Model | Description |
-|-------|-------------|
+| ------- | ------------- |
 | `Booking` | Service bookings |
 | `Notification` | User notifications |
 | `Contact` | Contact form submissions |
@@ -206,8 +219,9 @@ Troubleshooting tips
 ## 🔗 URL Endpoints
 
 ### Public Pages
+
 | URL | Description |
-|-----|-------------|
+| ----- | ------------- |
 | `/` | Homepage |
 | `/services/` | All services |
 | `/services/<id>/` | Service detail |
@@ -217,15 +231,17 @@ Troubleshooting tips
 | `/contact/` | Contact form |
 
 ### Authentication
+
 | URL | Description |
-|-----|-------------|
+| ----- | ------------- |
 | `/login/` | User login |
 | `/signup/` | User registration |
 | `/logout/` | User logout |
 
 ### User Dashboard
+
 | URL | Description |
-|-----|-------------|
+| ----- | ------------- |
 | `/profile/` | User profile |
 | `/my-bookings/` | User bookings |
 | `/order-history/` | Order history |
@@ -235,8 +251,9 @@ Troubleshooting tips
 | `/notifications/` | Notifications |
 
 ### Booking Actions
+
 | URL | Description |
-|-----|-------------|
+| ----- | ------------- |
 | `/book/<service_id>/` | Book a service |
 | `/booking/modify/<id>/` | Modify booking |
 | `/booking/cancel/<id>/` | Cancel booking |
@@ -261,6 +278,7 @@ Troubleshooting tips
 ## 📝 Sample Data
 
 The project includes scripts to populate sample data:
+
 - **5 Users** (including admin)
 - **61 Services** across all categories
 - **42 Store Products**
@@ -278,7 +296,7 @@ python manage.py test core
 
 ## 📦 Dependencies
 
-```
+```text
 Django>=5.0
 Pillow>=10.0
 python-dotenv>=1.0
@@ -287,6 +305,7 @@ python-dotenv>=1.0
 ## 🌐 Deployment
 
 The project includes configuration for Vercel deployment:
+
 - `vercel.json` - Vercel configuration
 - `wsgi_vercel.py` - WSGI for serverless
 

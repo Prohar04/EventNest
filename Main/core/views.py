@@ -258,10 +258,140 @@ def all_services(request):
 
     categories = ServiceCategory.objects.all()
 
+    # Fallback demo services if database is empty
+    demo_services = []
+    if not services.exists() and not query and not category_id:
+        demo_services = [
+            {
+                'title': 'Wedding Event Management',
+                'category': 'Event Planning',
+                'description': (
+                    'Complete wedding planning with venue setup, guest '
+                    'coordination, and day-of management for your perfect '
+                    'celebration.'
+                ),
+                'price': '25,000',
+                'rating': '4.9',
+                'reviews': '145',
+                'icon': 'bi-balloon-heart',
+                'gradient': (
+                    'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
+                ),
+            },
+            {
+                'title': 'Corporate Event Planning',
+                'category': 'Event Planning',
+                'description': (
+                    'Professional corporate event planning including '
+                    'conferences, seminars, product launches, and team '
+                    'building activities.'
+                ),
+                'price': '35,000',
+                'rating': '4.8',
+                'reviews': '98',
+                'icon': 'bi-briefcase',
+                'gradient': (
+                    'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)'
+                ),
+            },
+            {
+                'title': 'Birthday Party Planning',
+                'category': 'Event Planning',
+                'description': (
+                    'Creative birthday party planning for kids and adults '
+                    'with themes, decorations, entertainment, and more.'
+                ),
+                'price': '12,000',
+                'rating': '4.7',
+                'reviews': '210',
+                'icon': 'bi-gift',
+                'gradient': (
+                    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                ),
+            },
+            {
+                'title': 'Professional Photography',
+                'category': 'Photography',
+                'description': (
+                    'High-quality event photography with professional '
+                    'editing, delivered within 7 days. Includes 200+ '
+                    'edited photos.'
+                ),
+                'price': '8,000',
+                'rating': '4.9',
+                'reviews': '320',
+                'icon': 'bi-camera',
+                'gradient': (
+                    'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
+                ),
+            },
+            {
+                'title': 'Catering Service',
+                'category': 'Catering',
+                'description': (
+                    'Delicious Bangladeshi and international cuisine with '
+                    'professional serving staff for events of all sizes.'
+                ),
+                'price': '15,000',
+                'rating': '4.8',
+                'reviews': '185',
+                'icon': 'bi-egg-fried',
+                'gradient': (
+                    'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                ),
+            },
+            {
+                'title': 'Decoration & Lighting',
+                'category': 'Decoration',
+                'description': (
+                    'Stunning event decoration with ambient lighting, '
+                    'floral arrangements, and custom stage setup.'
+                ),
+                'price': '10,000',
+                'rating': '4.7',
+                'reviews': '156',
+                'icon': 'bi-flower1',
+                'gradient': (
+                    'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)'
+                ),
+            },
+            {
+                'title': 'Printing Services',
+                'category': 'Printing',
+                'description': (
+                    'Custom invitation cards, banners, flyers, and event '
+                    'materials with premium paper and fast delivery.'
+                ),
+                'price': '600',
+                'rating': '4.6',
+                'reviews': '267',
+                'icon': 'bi-printer',
+                'gradient': (
+                    'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                ),
+            },
+            {
+                'title': 'Entertainment / DJ Service',
+                'category': 'Entertainment',
+                'description': (
+                    'Professional DJ and entertainment services with sound '
+                    'system, lighting, and music for all occasions.'
+                ),
+                'price': '5,000',
+                'rating': '4.8',
+                'reviews': '142',
+                'icon': 'bi-music-note-beamed',
+                'gradient': (
+                    'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)'
+                ),
+            },
+        ]
+
     context = {
         'services': services,
         'categories': categories,
         'query': query,
+        'demo_services': demo_services,
     }
     return render(request, 'services/all_services.html', context)
 
@@ -430,11 +560,130 @@ def all_store_items(request):
         except Wishlist.DoesNotExist:
             pass
 
+    # Fallback demo products if database is empty
+    demo_products = []
+    if not items.exists() and not query and not category_id:
+        demo_products = [
+            {
+                'name': 'Balloon Decoration Kit',
+                'category': 'Decorations',
+                'description': (
+                    'Premium balloon kit with 100+ colorful balloons, '
+                    'ribbons, and pump. Perfect for parties and events.'
+                ),
+                'price': '1,250',
+                'rating': '4.5',
+                'icon': 'bi-balloon',
+                'gradient': (
+                    'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
+                ),
+            },
+            {
+                'name': 'LED Fairy String Lights',
+                'category': 'Lighting',
+                'description': (
+                    'Beautiful 10-meter LED fairy lights with 8 lighting '
+                    'modes. Battery and USB powered options.'
+                ),
+                'price': '850',
+                'rating': '4.7',
+                'icon': 'bi-lightning',
+                'gradient': (
+                    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                ),
+            },
+            {
+                'name': 'Artificial Flower Bouquet',
+                'category': 'Decorations',
+                'description': (
+                    'Realistic artificial flower bouquet in vibrant colors. '
+                    'Perfect for table centerpieces and decoration.'
+                ),
+                'price': '950',
+                'rating': '4.6',
+                'icon': 'bi-flower1',
+                'gradient': (
+                    'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                ),
+            },
+            {
+                'name': 'Table Centerpiece Stand',
+                'category': 'Decorations',
+                'description': (
+                    'Elegant gold-plated table centerpiece stand for flowers '
+                    'and candles. Adjustable height.'
+                ),
+                'price': '1,850',
+                'rating': '4.8',
+                'icon': 'bi-trophy',
+                'gradient': (
+                    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                ),
+            },
+            {
+                'name': 'Invitation Card Pack (50 pcs)',
+                'category': 'Printing',
+                'description': (
+                    'Premium invitation cards with envelopes. Blank inside '
+                    'for custom messages. Multiple designs available.'
+                ),
+                'price': '450',
+                'rating': '4.5',
+                'icon': 'bi-envelope-heart',
+                'gradient': (
+                    'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)'
+                ),
+            },
+            {
+                'name': 'Event Welcome Board',
+                'category': 'Decorations',
+                'description': (
+                    'Wooden welcome board with chalk surface. Includes stand '
+                    'and chalk markers. 60cm x 90cm size.'
+                ),
+                'price': '750',
+                'rating': '4.7',
+                'icon': 'bi-signpost-2',
+                'gradient': (
+                    'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                ),
+            },
+            {
+                'name': 'Birthday Party Package',
+                'category': 'Party Packages',
+                'description': (
+                    'Complete party package with decorations, balloons, '
+                    'banners, hats, and party favors for 20 guests.'
+                ),
+                'price': '2,500',
+                'rating': '4.9',
+                'icon': 'bi-gift',
+                'gradient': (
+                    'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
+                ),
+            },
+            {
+                'name': 'Wedding Decor Package',
+                'category': 'Party Packages',
+                'description': (
+                    'Premium wedding decoration bundle with flowers, lights, '
+                    'fabrics, and centerpieces. Covers 100 guests.'
+                ),
+                'price': '5,500',
+                'rating': '4.8',
+                'icon': 'bi-balloon-heart',
+                'gradient': (
+                    'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)'
+                ),
+            },
+        ]
+
     context = {
         'items': items,
         'categories': categories,
         'query': query,
         'wishlist_items': wishlist_items,
+        'demo_products': demo_products,
     }
     return render(request, 'store/all_items.html', context)
 
@@ -545,6 +794,25 @@ def checkout(request):
         return redirect('cart')
 
     if request.method == 'POST':
+        # Validate stock availability before creating order
+        stock_errors = []
+        for cart_item in cart_items:
+            if cart_item.quantity > cart_item.item.stock:
+                stock_errors.append(
+                    f"{cart_item.item.name}: requested {cart_item.quantity}, "
+                    f"only {cart_item.item.stock} available"
+                )
+
+        if stock_errors:
+            for error in stock_errors:
+                messages.error(request, error)
+            messages.error(
+                request,
+                'Some items in your cart are no longer available in the '
+                'requested quantity. Please update your cart.'
+            )
+            return redirect('cart')
+
         # Create order
         order = Order.objects.create(
             user=request.user,
@@ -557,7 +825,7 @@ def checkout(request):
             )
         )
 
-        # Create order items
+        # Create order items (stock will be reduced in OrderItem.save())
         for cart_item in cart_items:
             OrderItem.objects.create(
                 order=order,
@@ -867,7 +1135,7 @@ def download_invoice(request, order_id):
         buffer = BytesIO()
         doc = SimpleDocTemplate(
             buffer, pagesize=letter,
-            topMargin=0.5*inch, bottomMargin=0.5*inch,
+            topMargin=0.5 * inch, bottomMargin=0.5 * inch,
         )
         elements = []
         styles = getSampleStyleSheet()
@@ -892,7 +1160,7 @@ def download_invoice(request, order_id):
 
         # Title
         elements.append(Paragraph("INVOICE", title_style))
-        elements.append(Spacer(1, 0.2*inch))
+        elements.append(Spacer(1, 0.2 * inch))
 
         # Order info
         order_info = [
@@ -906,7 +1174,7 @@ def download_invoice(request, order_id):
             ],
         ]
 
-        info_table = Table(order_info, colWidths=[3*inch, 3*inch])
+        info_table = Table(order_info, colWidths=[3 * inch, 3 * inch])
         info_table.setStyle(TableStyle([
             ('FONT', (0, 0), (-1, -1), 'Helvetica', 10),
             ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#333333')),
@@ -915,14 +1183,14 @@ def download_invoice(request, order_id):
             ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
         ]))
         elements.append(info_table)
-        elements.append(Spacer(1, 0.3*inch))
+        elements.append(Spacer(1, 0.3 * inch))
 
         # Customer info
         elements.append(Paragraph("Bill To:", styles['Heading3']))
         uname = order.user.get_full_name() or order.user.username
         customer_info = f"{uname}<br/>{order.shipping_address}"
         elements.append(Paragraph(customer_info, header_style))
-        elements.append(Spacer(1, 0.2*inch))
+        elements.append(Spacer(1, 0.2 * inch))
 
         # Items table
         elements.append(Paragraph("Order Items", styles['Heading3']))
@@ -947,7 +1215,7 @@ def download_invoice(request, order_id):
             f"৳{order.total_amount:,.2f}",
         ])
 
-        col_widths = [2.5*inch, 1*inch, 1.5*inch, 1.5*inch]
+        col_widths = [2.5 * inch, 1 * inch, 1.5 * inch, 1.5 * inch]
         items_table = Table(item_data, colWidths=col_widths)
         items_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#7C3AED')),
@@ -965,7 +1233,7 @@ def download_invoice(request, order_id):
              [colors.white, colors.HexColor('#F9F5FF')]),
         ]))
         elements.append(items_table)
-        elements.append(Spacer(1, 0.3*inch))
+        elements.append(Spacer(1, 0.3 * inch))
 
         # Footer
         footer_style = ParagraphStyle(
