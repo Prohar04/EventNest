@@ -24,9 +24,10 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
     
-    # Home
+    # Home (public landing) and authenticated dashboard
     path('', views.home, name='home'),
-    
+    path('app/', views.app_home, name='app'),
+
     # Search
     path('search/', views.search, name='search'),
     

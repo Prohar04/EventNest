@@ -84,58 +84,92 @@ EventNest/
 ## 🚀 Installation
 
 ### Prerequisites
-- Python 3.10+
+- Python 3.10 or 3.11 (recommended). Newer Python versions (3.13/3.14) may require building some binary wheels from source.
 - pip (Python package manager)
 - Git
 
-### Setup Instructions
+### macOS system libraries (if using macOS)
+Some Python packages (for example Pillow) require native image libraries to build. Install them with Homebrew if you see build errors for Pillow:
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Prohar04/EventNest.git
-   cd EventNest
-   ```
+```bash
+# install Homebrew first (if you don't have it): https://brew.sh/
+brew install libjpeg libtiff webp zlib
+```
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   
-   # Windows
-   venv\Scripts\activate
-   
-   # Linux/Mac
-   source venv/bin/activate
-   ```
+### Setup Instructions (recommended)
 
-3. **Install dependencies**
-   ```bash
-   cd Main
-   pip install -r requirements.txt
-   ```
+1. Clone the repository and change into it:
+```bash
+git clone https://github.com/Prohar04/EventNest.git
+cd EventNest
+```
 
-4. **Run migrations**
-   ```bash
-   python manage.py migrate
-   ```
+2. Work from the `Main/` folder where `manage.py` lives. Create a virtual environment and activate it:
+```bash
+cd Main
+python3 -m venv .venv
+# macOS / Linux
+source .venv/bin/activate
+# Windows (PowerShell)
+.\.venv\Scripts\Activate.ps1
+```
 
-5. **Create superuser (admin)**
-   ```bash
-   python manage.py createsuperuser
-   ```
+3. (If you get an error like `Invalid requirement: 'D\x00j\x00a...')` the `requirements.txt` file is UTF-16 encoded. Convert it (one-time):
+```bash
+# from the repository root
+python - <<'PY'
+from pathlib import Path
+p = Path('Main/requirements.txt')
+b = p.read_bytes()
+for enc in ('utf-16', 'utf-16-le', 'utf-16-be', 'utf-8'):
+    try:
+        s = b.decode(enc)
+        p.write_text(s, encoding='utf-8')
+        print('Re-encoded using', enc)
+        break
+    except Exception:
+        pass
+else:
+    print('Could not decode requirements.txt; inspect file encoding')
+PY
+```
 
-6. **Populate sample data (optional)**
-   ```bash
-   python populate_data.py
-   ```
+4. Upgrade packaging tools and install Python dependencies:
+```bash
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r requirements.txt
+```
 
-7. **Run the development server**
-   ```bash
-   python manage.py runserver
-   ```
+Notes:
+- If `pip install` fails while building `Pillow`, install the macOS system libs (see above) or use Python 3.10/3.11 where prebuilt wheels are available.
 
-8. **Access the application**
-   - Website: http://127.0.0.1:8000/
-   - Admin Panel: http://127.0.0.1:8000/admin/
+5. Apply migrations:
+```bash
+python manage.py migrate
+```
+
+6. Create an admin user:
+```bash
+python manage.py createsuperuser
+```
+
+7. (Optional) Populate sample data:
+```bash
+python populate_data.py
+```
+
+8. Run the development server:
+```bash
+python manage.py runserver
+```
+
+9. Open the site in your browser:
+- Website: http://127.0.0.1:8000/
+- Admin: http://127.0.0.1:8000/admin/
+
+Troubleshooting tips
+- If you see errors building wheels for packages like `Pillow`, prefer installing the OS image libraries via Homebrew (macOS) or the equivalent package manager on Linux, or use Python 3.10/3.11.
+- If you prefer to run with a production DB or cloud host, set `DATABASE_URL` and other environment variables; see `Main/myproject/settings.py` for supported env vars.
 
 ## 📊 Database Models
 

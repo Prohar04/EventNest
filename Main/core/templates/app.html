@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — EventNest{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ══════════════════════════════════════════
+   AUTHENTICATED DASHBOARD — /app/
+   Dark theme, blue/green branding
+   ══════════════════════════════════════════ */
+
+.dash-wrap {
+  min-height: calc(100vh - 64px);
+  background: linear-gradient(160deg, #0f172a 0%, #0c1a2e 60%, #0f172a 100%);
+  padding: 2.5rem 0 4rem;
+}
+
+/* ── Welcome bar ─────────────────────────────────────────── */
+.dash-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.25rem;
+}
+.dash-greeting {
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+.dash-greeting .hl-blue  { color: #60a5fa; }
+.dash-greeting .hl-green { color: #34d399; }
+.dash-subline {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+.dash-welcome-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ── Stat cards ──────────────────────────────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.25rem;
+}
+@media (max-width: 960px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+.stat-card {
+  background: rgba(30, 41, 59, 0.70);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+.stat-card:hover {
+  border-color: rgba(99,102,241,0.35);
+  transform: translateY(-3px);
+}
+.stat-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.si-blue   { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+.si-green  { background: rgba(16,185,129,0.15);  color: #34d399; }
+.si-purple { background: rgba(99,102,241,0.15);  color: #a5b4fc; }
+.si-pink   { background: rgba(236,72,153,0.15);  color: #f472b6; }
+
+.stat-info { min-width: 0; }
+.stat-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1;
+  display: block;
+}
+.stat-label {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* ── Quick actions ───────────────────────────────────────── */
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #34d399;
+  margin-bottom: 1rem;
+}
+.actions-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+@media (max-width: 800px) { .actions-row { grid-template-columns: repeat(2, 1fr); } }
+
+.action-card {
+  background: rgba(30,41,59,0.60);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.action-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99,102,241,0.3);
+  box-shadow: 0 12px 36px rgba(99,102,241,0.1);
+}
+.ac-icon {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 0.9rem;
+}
+.action-card h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+.action-card p {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Content columns ─────────────────────────────────────── */
+.dash-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) { .dash-cols { grid-template-columns: 1fr; } }
+
+.dash-panel {
+  background: rgba(30,41,59,0.60);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.panel-header {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+}
+.panel-header a {
+  font-size: 0.78rem;
+  color: #60a5fa;
+  text-decoration: none;
+}
+.panel-header a:hover { text-decoration: underline; }
+
+/* booking / order rows */
+.data-row {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.data-row:last-child { border-bottom: none; }
+.dr-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.dr-info { flex: 1; min-width: 0; }
+.dr-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dr-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.15rem;
+}
+.dr-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.badge-pending   { background: rgba(245,158,11,0.15);  color: #fbbf24; }
+.badge-confirmed { background: rgba(16,185,129,0.15);  color: #34d399; }
+.badge-completed { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+.badge-cancelled { background: rgba(239,68,68,0.15);   color: #f87171; }
+.badge-processing{ background: rgba(99,102,241,0.15);  color: #a5b4fc; }
+.badge-shipped   { background: rgba(20,184,166,0.15);  color: #2dd4bf; }
+.badge-delivered { background: rgba(16,185,129,0.15);  color: #34d399; }
+
+.empty-panel {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: #475569;
+}
+.empty-panel i { font-size: 2rem; display: block; margin-bottom: 0.6rem; }
+.empty-panel p { font-size: 0.85rem; margin: 0; }
+
+/* ── Button helpers (reuse landing style) ────────────────── */
+.btn-dash {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 10px;
+  font-weight: 600; font-size: 0.88rem;
+  text-decoration: none;
+  border: none; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-dash-primary {
+  background: linear-gradient(135deg, #3B82F6, #6366f1);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.28);
+}
+.btn-dash-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59,130,246,0.4);
+  color: #fff;
+}
+.btn-dash-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #94a3b8;
+}
+.btn-dash-outline:hover {
+  background: rgba(255,255,255,0.06);
+  color: #f1f5f9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card, .action-card, .btn-dash { transition: none !important; }
+  .stat-card:hover, .action-card:hover { transform: none; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-wrap">
+  <div class="container">
+
+    <!-- ── Welcome header ── -->
+    <div class="dash-welcome">
+      <div>
+        <div class="dash-greeting">
+          Good to see you, <span class="hl-blue">{{ request.user.first_name|default:request.user.username }}</span>
+          <span class="hl-green"> ✦</span>
+        </div>
+        <div class="dash-subline">Here's a summary of your EventNest activity.</div>
+      </div>
+      <div class="dash-welcome-actions">
+        <a href="{% url 'all_services' %}" class="btn-dash btn-dash-primary">
+          <i class="bi bi-sparkles"></i> Book a Service
+        </a>
+        <a href="{% url 'profile' %}" class="btn-dash btn-dash-outline">
+          <i class="bi bi-person-circle"></i> Profile
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Stat cards ── -->
+    <div class="stat-row">
+      <a href="{% url 'my_bookings' %}" class="stat-card">
+        <div class="stat-icon si-blue"><i class="bi bi-calendar-check"></i></div>
+        <div class="stat-info">
+          <span class="stat-num">{{ bookings_count }}</span>
+          <span class="stat-label">Bookings</span>
+        </div>
+      </a>
+      <a href="{% url 'order_history' %}" class="stat-card">
+        <div class="stat-icon si-green"><i class="bi bi-bag-check"></i></div>
+        <div class="stat-info">
+          <span class="stat-num">{{ orders_count }}</span>
+          <span class="stat-label">Orders</span>
+        </div>
+      </a>
+      <a href="{% url 'wishlist' %}" class="stat-card">
+        <div class="stat-icon si-pink"><i class="bi bi-heart"></i></div>
+        <div class="stat-info">
+          <span class="stat-num">{{ wishlist_count }}</span>
+          <span class="stat-label">Wishlist</span>
+        </div>
+      </a>
+      <a href="{% url 'notifications' %}" class="stat-card">
+        <div class="stat-icon si-purple"><i class="bi bi-bell"></i></div>
+        <div class="stat-info">
+          <span class="stat-num">{{ unread_notifications }}</span>
+          <span class="stat-label">Unread Alerts</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- ── Quick actions ── -->
+    <p class="section-label">Quick Actions</p>
+    <div class="actions-row">
+      <a href="{% url 'all_services' %}" class="action-card">
+        <div class="ac-icon si-blue"><i class="bi bi-calendar-event"></i></div>
+        <h4>Book Services</h4>
+        <p>Events, photography, catering &amp; printing</p>
+      </a>
+      <a href="{% url 'all_store_items' %}" class="action-card">
+        <div class="ac-icon si-green"><i class="bi bi-shop"></i></div>
+        <h4>Browse Store</h4>
+        <p>Decorations, supplies &amp; event products</p>
+      </a>
+      <a href="{% url 'wishlist' %}" class="action-card">
+        <div class="ac-icon si-pink"><i class="bi bi-heart"></i></div>
+        <h4>My Wishlist</h4>
+        <p>Saved items you'd like to order later</p>
+      </a>
+      <a href="{% url 'notifications' %}" class="action-card">
+        <div class="ac-icon si-purple"><i class="bi bi-bell"></i></div>
+        <h4>Notifications</h4>
+        <p>Booking updates, orders &amp; promotions</p>
+      </a>
+    </div>
+
+    <!-- ── Recent activity columns ── -->
+    <div class="dash-cols">
+
+      <!-- Recent bookings -->
+      <div class="dash-panel">
+        <div class="panel-header">
+          <h3><i class="bi bi-calendar-check" style="color:#60a5fa; margin-right:.45rem;"></i>Recent Bookings</h3>
+          <a href="{% url 'my_bookings' %}">View all →</a>
+        </div>
+
+        {% if recent_bookings %}
+          {% for booking in recent_bookings %}
+          <div class="data-row">
+            <div class="dr-icon si-blue"><i class="bi bi-calendar-event"></i></div>
+            <div class="dr-info">
+              <div class="dr-title">{{ booking.get_service_type_display }}</div>
+              <div class="dr-sub">{{ booking.date }} &middot; ৳{{ booking.total_amount|floatformat:0 }}</div>
+            </div>
+            <span class="dr-badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-panel">
+            <i class="bi bi-calendar-x"></i>
+            <p>No bookings yet.<br>
+               <a href="{% url 'all_services' %}" style="color:#60a5fa;">Explore services →</a>
+            </p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Recent orders -->
+      <div class="dash-panel">
+        <div class="panel-header">
+          <h3><i class="bi bi-bag-check" style="color:#34d399; margin-right:.45rem;"></i>Recent Orders</h3>
+          <a href="{% url 'order_history' %}">View all →</a>
+        </div>
+
+        {% if recent_orders %}
+          {% for order in recent_orders %}
+          <div class="data-row">
+            <div class="dr-icon si-green"><i class="bi bi-box-seam"></i></div>
+            <div class="dr-info">
+              <div class="dr-title">Order #{{ order.id }}</div>
+              <div class="dr-sub">{{ order.created_at|date:"d M Y" }} &middot; ৳{{ order.total_amount|floatformat:0 }}</div>
+            </div>
+            <span class="dr-badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-panel">
+            <i class="bi bi-bag-x"></i>
+            <p>No orders yet.<br>
+               <a href="{% url 'all_store_items' %}" style="color:#34d399;">Browse the store →</a>
+            </p>
+          </div>
+        {% endif %}
+      </div>
+
+    </div><!-- /dash-cols -->
+
+  </div><!-- /container -->
+</div><!-- /dash-wrap -->
+{% endblock %}

@@ -35,7 +35,10 @@ def login_required_view(view_func):
 # ============== HOME & LANDING ==============
 
 def home(request):
-    """Public landing page — visible to all visitors"""
+    """Public landing page — redirect authenticated users to their dashboard"""
+    if request.user.is_authenticated:
+        return redirect('app')
+
     featured_items = StoreItem.objects.filter(stock__gt=0).order_by('-id')[:8]
     featured_services = (
         Service.objects.select_related('category').order_by('-id')[:4]
@@ -46,6 +49,36 @@ def home(request):
         'featured_services': featured_services,
     }
     return render(request, 'home.html', context)
+
+
+@login_required(login_url='login')
+def app_home(request):
+    """Authenticated user dashboard — the post-login home"""
+    recent_bookings = (
+        Booking.objects.filter(user=request.user)
+        .order_by('-created_at')[:3]
+    )
+    recent_orders = (
+        Order.objects.filter(user=request.user)
+        .order_by('-created_at')[:3]
+    )
+    bookings_count = Booking.objects.filter(user=request.user).count()
+    orders_count = Order.objects.filter(user=request.user).count()
+    unread_notifications = Notification.objects.filter(
+        user=request.user, is_read=False
+    ).count()
+    wishlist = Wishlist.objects.filter(user=request.user).first()
+    wishlist_count = wishlist.items.count() if wishlist else 0
+
+    context = {
+        'recent_bookings': recent_bookings,
+        'recent_orders': recent_orders,
+        'bookings_count': bookings_count,
+        'orders_count': orders_count,
+        'wishlist_count': wishlist_count,
+        'unread_notifications': unread_notifications,
+    }
+    return render(request, 'app.html', context)
 
 
 def search(request):
@@ -80,7 +113,7 @@ def search(request):
 def signup_view(request):
     """User registration"""
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('app')
 
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -135,7 +168,7 @@ def signup_view(request):
 def login_view(request):
     """User login"""
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('app')
 
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -152,9 +185,7 @@ def login_view(request):
                 name = user.first_name or user.username
                 messages.success(request, f'Welcome back, {name}!')
                 next_url = request.GET.get('next')
-                if next_url:
-                    return redirect(next_url)
-                return redirect('home')
+                return redirect(next_url if next_url else 'app')
             else:
                 messages.error(request, 'Invalid username or password.')
 
